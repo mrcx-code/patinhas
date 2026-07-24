@@ -90,15 +90,17 @@ class Instagram {
   async waitForContainer(containerId, { timeoutMs = 180_000, intervalMs = 4_000 } = {}) {
     const deadline = Date.now() + timeoutMs;
     for (;;) {
-      const { status_code: status, status } = await this.get(containerId, {
+      // status_code: EXPIRED | ERROR | FINISHED | IN_PROGRESS | PUBLISHED
+      // status: texto detalhado, útil na mensagem de erro
+      const { status_code: code, status: detail } = await this.get(containerId, {
         fields: 'status_code,status',
       });
-      if (status === 'FINISHED') return;
-      if (status === 'ERROR' || status === 'EXPIRED') {
-        throw new Error(`Container ${containerId} falhou: ${status} ${status ?? ''}`.trim());
+      if (code === 'FINISHED') return;
+      if (code === 'ERROR' || code === 'EXPIRED') {
+        throw new Error(`Container ${containerId} falhou: ${code} ${detail ?? ''}`.trim());
       }
       if (Date.now() > deadline) {
-        throw new Error(`Timeout esperando o container ${containerId} (último status: ${status})`);
+        throw new Error(`Timeout esperando o container ${containerId} (último status: ${code})`);
       }
       await new Promise((r) => setTimeout(r, intervalMs));
     }

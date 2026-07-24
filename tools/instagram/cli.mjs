@@ -5,7 +5,7 @@ import { client, IgError } from './lib/ig.mjs';
 const [cmd, ...args] = process.argv.slice(2);
 
 const HELP = `
-Instagram — Observatório
+Instagram — Patinhas
 
   Perfil
     whoami                          dados da conta + validade do token

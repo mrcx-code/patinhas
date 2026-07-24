@@ -1,1 +1,6 @@
 .claude/
+
+# Credenciais da automação do Instagram (tools/instagram) — NUNCA comitar
+.env
+tools/instagram/.env
+tools/instagram/.state.json

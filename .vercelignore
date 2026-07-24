@@ -1,0 +1,20 @@
+# Nada aqui é necessário para o site rodar — e não deve ficar público.
+# .vercelignore controla o que sobe para o deploy da Vercel; tudo listado
+# aqui deixa de ser servido em patinhasbrasil.com.br.
+
+# Migrations e policies de segurança (davam a um atacante o mapa do banco)
+sql/
+
+# Automação (contém padrões e, potencialmente, .env com tokens)
+tools/
+
+# Documentos internos de estratégia, roadmap e prompts
+CLAUDE.md
+README.md
+Patinhas-Calendario-Editorial.md
+Patinhas-Manual-ONG-Cadastrar-Pet.md
+Patinhas-ONGs-e-Abordagem.md
+Patinhas-Prompts-para-o-Code.md
+Patinhas-Rodada-do-Time.md
+Patinhas-Visao-e-Roadmap.md
+proposta-conteudo-lancamento.md

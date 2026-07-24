@@ -21,7 +21,11 @@ async function loadPets() {
     } else {
       const { data, error } = await window.sb
         .from("pets")
-        .select("*, org:profiles(id, org_name, contact_whatsapp, contact_email, city, state)")
+        // Página pública: NÃO trazer contact_email — o mural só usa o WhatsApp
+        // (ver linha ~696). Buscar o e-mail aqui o colocava no payload público
+        // e permitia dumpar o contato de todas as ONGs pela API. O e-mail
+        // continua acessível só ao próprio abrigo, na área logada.
+        .select("*, org:profiles(id, org_name, contact_whatsapp, city, state)")
         .order("sort_order", { ascending: true, nullsFirst: false })
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -448,7 +452,12 @@ function petCardHtml(pet) {
   // em processo ou já adotado, não há para onde encaminhar interessados.
   const shareBtn =
     pet.status === "disponivel"
-      ? `<button type="button" class="pet-card-share-btn" title="Compartilhar" onclick="sharePet(this, '${pet.id}', '${escapeHtml(pet.name)}')">🔗</button>`
+      // O nome vai num data-attribute, NÃO dentro da string do onclick: o
+      // navegador decodifica as entidades antes de compilar o handler, então
+      // escapeHtml não protege ali — um nome de pet com aspas escaparia da
+      // string e viraria código executável para todo visitante. Em atributo
+      // comum, escapeHtml basta.
+      ? `<button type="button" class="pet-card-share-btn" title="Compartilhar" data-pet-name="${escapeHtml(pet.name)}" onclick="sharePet(this, '${pet.id}')">🔗</button>`
       : "";
 
   return `
@@ -475,7 +484,8 @@ function petCardHtml(pet) {
 
 /** Compartilha o link direto do pet — usa a Web Share API nativa quando
  * disponível (mobile), senão copia o link e avisa no próprio botão. */
-async function sharePet(button, petId, petName) {
+async function sharePet(button, petId) {
+  const petName = button.dataset.petName || "esse pet";
   const url = `${window.location.origin}${window.location.pathname}#pet-${petId}`;
   if (navigator.share) {
     try {
